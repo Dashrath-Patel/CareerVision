@@ -1,0 +1,215 @@
+{% extends "base.html" %}
+{% block content %}
+<!-- Quiz Container -->
+<div class="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 py-8">
+    <div class="max-w-4xl mx-auto px-4">
+        <!-- Quiz Header -->
+        <div class="text-center mb-8">
+            <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full mb-4">
+                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                </svg>
+            </div>
+            <h1 class="text-4xl font-bold text-gray-800 mb-3">
+                🧠 Logical Reasoning Quiz
+            </h1>
+            <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                Test your analytical thinking and problem-solving skills with these carefully crafted questions. Your performance will help us provide better career recommendations.
+            </p>
+            <div class="mt-4 inline-flex items-center px-4 py-2 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
+                <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                </svg>
+                {{ questions|length }} Questions • Estimated time: 5-10 minutes
+            </div>
+        </div>
+
+        <!-- Quiz Form -->
+        <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
+            <form method="post" action="{% url 'submit_quiz' %}" class="space-y-0">
+                {% csrf_token %}
+                
+                {% for question in questions %}
+                <div class="{% if not forloop.first %}border-t border-gray-100{% endif %}">
+                    <!-- Question Card -->
+                    <div class="p-6 lg:p-8 hover:bg-gray-50 transition-colors duration-200">
+                        <!-- Question Header -->
+                        <div class="flex items-start space-x-4 mb-6">
+                            <div class="flex-shrink-0">
+                                <div class="w-8 h-8 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full flex items-center justify-center">
+                                    <span class="text-white font-bold text-sm">{{ forloop.counter }}</span>
+                                </div>
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="text-xl font-semibold text-gray-800 leading-relaxed">
+                                    {{ question.question_text }}
+                                </h3>
+                            </div>
+                        </div>
+
+                        <!-- Answer Options -->
+                        <div class="ml-12 space-y-3">
+                            {% for choice in question.choice_set.all %}
+                            <label class="group cursor-pointer block">
+                                <div class="flex items-center space-x-4 p-4 rounded-xl border-2 border-gray-200 hover:border-indigo-300 hover:bg-indigo-50 transition-all duration-200 group-hover:shadow-md">
+                                    <input 
+                                        type="radio" 
+                                        name="question_{{ question.id }}" 
+                                        value="{{ choice.id }}" 
+                                        required
+                                        class="w-5 h-5 text-indigo-600 border-2 border-gray-300 focus:ring-indigo-500 focus:ring-2"
+                                    >
+                                    <span class="flex-1 text-gray-700 font-medium group-hover:text-indigo-700 transition-colors duration-200">
+                                        {{ choice.choice_text }}
+                                    </span>
+                                    <div class="opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                        <svg class="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                        </svg>
+                                    </div>
+                                </div>
+                            </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+
+                <!-- Submit Section -->
+                <div class="bg-gradient-to-r from-indigo-50 to-purple-50 p-6 lg:p-8">
+                    <div class="text-center space-y-4">
+                        <div class="flex items-center justify-center space-x-2 text-gray-600 mb-4">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <span class="text-sm font-medium">Double-check your answers before submitting</span>
+                        </div>
+                        
+                        <button 
+                            type="submit" 
+                            class="inline-flex items-center px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold text-lg rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-lg focus:outline-none focus:ring-4 focus:ring-indigo-300"
+                        >
+                            <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            Submit Quiz & Get Results
+                        </button>
+                        
+                        <p class="text-sm text-gray-500 mt-3">
+                            Your results will be used to calculate your logical quotient rating
+                        </p>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Progress Indicator (Optional Enhancement) -->
+        <div class="mt-8 text-center">
+            <div class="inline-flex items-center space-x-2 text-gray-500">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"></path>
+                </svg>
+                <span class="text-xs font-medium">Your data is secure and used only for career assessment</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Custom CSS for enhanced interactions -->
+<style>
+/* Custom radio button styling */
+input[type="radio"]:checked + span {
+    color: #4f46e5 !important;
+    font-weight: 600;
+}
+
+input[type="radio"]:checked {
+    border-color: #4f46e5 !important;
+    background-color: #4f46e5 !important;
+}
+
+/* Smooth animations for form elements */
+label:hover {
+    transform: translateY(-1px);
+}
+
+/* Question card animation */
+.question-card {
+    animation: slideIn 0.5s ease-out forwards;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Answer selection effect */
+input[type="radio"]:checked + span + div {
+    opacity: 1 !important;
+}
+</style>
+
+<!-- JavaScript for enhanced UX -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Add smooth scrolling when an answer is selected
+    const radioButtons = document.querySelectorAll('input[type="radio"]');
+    radioButtons.forEach(radio => {
+        radio.addEventListener('change', function() {
+            // Add visual feedback
+            const label = this.closest('label');
+            const allLabelsInQuestion = label.closest('.space-y-3').querySelectorAll('label');
+            
+            // Remove previous selection styling
+            allLabelsInQuestion.forEach(l => {
+                l.querySelector('div').classList.remove('border-indigo-500', 'bg-indigo-100');
+                l.querySelector('div').classList.add('border-gray-200');
+            });
+            
+            // Add styling to selected option
+            const selectedDiv = label.querySelector('div');
+            selectedDiv.classList.remove('border-gray-200');
+            selectedDiv.classList.add('border-indigo-500', 'bg-indigo-100');
+        });
+    });
+
+    // Form validation feedback
+    const form = document.querySelector('form');
+    form.addEventListener('submit', function(e) {
+        const questions = document.querySelectorAll('fieldset, [data-question]');
+        let allAnswered = true;
+        
+        questions.forEach(question => {
+            const radios = question.querySelectorAll('input[type="radio"]');
+            const answered = Array.from(radios).some(radio => radio.checked);
+            if (!answered) {
+                allAnswered = false;
+            }
+        });
+
+        if (!allAnswered) {
+            e.preventDefault();
+            alert('Please answer all questions before submitting.');
+            return false;
+        }
+
+        // Show loading state
+        const submitBtn = this.querySelector('button[type="submit"]');
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = `
+            <svg class="animate-spin w-6 h-6 mr-3" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            Processing...
+        `;
+    });
+});
+</script>
+{% endblock %}

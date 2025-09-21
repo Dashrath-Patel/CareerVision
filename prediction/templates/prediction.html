@@ -1,0 +1,352 @@
+{% extends "base.html" %}
+{% block content %}
+    <!-- form - start -->
+    <div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-8">
+        <div class="max-w-4xl mx-auto px-4">
+            <!-- Header Section -->
+            <div class="text-center mb-8">
+                <h1 class="text-4xl font-bold text-gray-800 mb-4">
+                    What's Your Ideal Career Journey?
+                </h1>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                    Discover Your Ideal Career Path with This Fun Test! You've Got What It Takes, Ready to Explore?
+                </p>
+            </div>
+
+            <!-- Roadmap Result Section -->
+            {% if roadmap %}
+            <div class="bg-white rounded-xl shadow-lg p-6 mb-8 transform transition-all duration-300 hover:shadow-xl">
+                <div class="flex flex-col lg:flex-row gap-6">
+                    <!-- Image -->
+                    <div class="lg:w-1/2">
+                        <a href="{{ roadmap.pdf.url }}" target="_blank" class="block group">
+                            <img src="{{ roadmap.image.url }}" alt="{{ roadmap.title }}" 
+                                 class="w-full h-64 object-cover rounded-lg transition-transform duration-300 group-hover:scale-105">
+                        </a>
+                    </div>
+                    
+                    <!-- Details -->
+                    <div class="lg:w-1/2 flex flex-col justify-center space-y-4">
+                        <h2 class="text-2xl font-bold text-gray-800 text-center lg:text-left">{{ roadmap.title }}</h2>
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-center lg:justify-start">
+                                <span class="text-sm font-medium text-gray-600 mr-2">Average Salary:</span>
+                                <span class="text-lg font-bold text-green-600">{{ roadmap.average_salary }} LPA</span>
+                            </div>
+                            <div class="flex items-center justify-center lg:justify-start">
+                                <span class="text-sm font-medium text-gray-600 mr-2">Verified By:</span>
+                                <span class="text-lg font-semibold text-indigo-600">{{ roadmap.verified_by }}</span>
+                            </div>
+                        </div>
+                        <div class="flex justify-center lg:justify-start">
+                            <a href="{{ roadmap.pdf.url }}" target="_blank"
+                               class="inline-flex items-center px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                </svg>
+                                Open Roadmap
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Assessment Form -->
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                <!-- Form Header -->
+                <div class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white p-6">
+                    <h2 class="text-2xl font-bold text-center mb-2">
+                        Let's Check your Logical Rating
+                    </h2>
+                    <p class="text-indigo-100 text-center">Complete the assessment to get personalized career predictions</p>
+                </div>
+
+                <!-- Quiz Start Button -->
+                <div class="p-6 bg-gray-50 border-b">
+                    <div class="text-center">
+                        <p class="text-gray-600 mb-4">First, take our quick logical reasoning test to assess your analytical skills</p>
+                        <a href="{% url 'quiz' %}" 
+                           class="inline-flex items-center px-8 py-3 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                            </svg>
+                            Start Logical Test
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Logical Rating Display -->
+                {% if logical_quotient_rating is not None %}
+                <div class="p-4 bg-green-50 border-b border-green-200">
+                    <div class="text-center">
+                        <h3 class="text-xl font-bold text-green-700 mb-2">
+                            🎉 Your Logical Rating: {{ logical_quotient_rating }}/10
+                        </h3>
+                        <p class="text-green-600">Great! Now complete the form below to get your career prediction.</p>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Assessment Form -->
+                <div class="p-6">
+                    <form class="space-y-6" action="{% url 'prediction' %}" method="post">
+                        {% csrf_token %}
+                        
+                        <!-- Personal Skills Section -->
+                        <div class="space-y-6">
+                            <h3 class="text-xl font-semibold text-gray-800 border-b border-gray-200 pb-2 mb-4">
+                                📊 Personal Skills Assessment
+                            </h3>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <!-- Logical quotient rating -->
+                                <div class="space-y-2">
+                                    <label for="logical-quotient-rating" class="flex items-center text-sm font-medium text-gray-700">
+                                        <span class="w-2 h-2 bg-red-500 rounded-full mr-2"></span>
+                                        Logical Quotient Rating (1-10)
+                                    </label>
+                                    <input
+                                        disabled
+                                        required
+                                        value="{{ logical_quotient_rating }}"
+                                        type="text"
+                                        name="logical_quotient_rating"
+                                        min="1"
+                                        max="10"
+                                        class="w-full px-4 py-3 rounded-lg border border-gray-300 bg-gray-100 text-gray-700 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
+                                        placeholder="Complete the test above"
+                                    /> 
+                                </div>
+
+                                <!-- Hackathons -->
+                                <div class="space-y-2">
+                                    <label for="hackathons" class="block text-sm font-medium text-gray-700">
+                                        🏆 Hackathons Participated
+                                    </label>
+                                    <input
+                                        required
+                                        value="{{ hackathons.0 }}"
+                                        type="number"
+                                        name="hackathons"
+                                        min="0"
+                                        class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
+                                        placeholder="e.g., 3"
+                                    />
+                                </div>
+
+                                <!-- Coding skills rating -->
+                                <div class="space-y-2">
+                                    <label for="coding-skills-rating" class="flex items-center text-sm font-medium text-gray-700">
+                                        <span class="w-2 h-2 bg-red-500 rounded-full mr-2"></span>
+                                        💻 Coding Skills Rating (1-10)
+                                    </label>
+                                    <input
+                                        required
+                                        value="{{ coding_skills_rating }}"
+                                        type="number"
+                                        name="coding_skills"
+                                        min="1"
+                                        max="10"
+                                        class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
+                                        placeholder="Rate your coding skills"
+                                    />
+                                </div>
+
+                                <!-- Public Speaking -->
+                                <div class="space-y-2">
+                                    <label for="public-speaking-points" class="flex items-center text-sm font-medium text-gray-700">
+                                        <span class="w-2 h-2 bg-red-500 rounded-full mr-2"></span>
+                                        🎤 Public Speaking Points (1-10)
+                                    </label>
+                                    <input
+                                        required
+                                        value="{{ public_speaking_points }}"
+                                        type="number"
+                                        name="public_speaking_points"
+                                        min="1"
+                                        max="10"
+                                        class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
+                                        placeholder="Rate your public speaking ability"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Education & Experience Section -->
+                        <div class="space-y-6">
+                            <h3 class="text-xl font-semibold text-gray-800 border-b border-gray-200 pb-2 mb-4">
+                                🎓 Education & Experience
+                            </h3>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <!-- Certifications -->
+                                <div class="space-y-2">
+                                    <label for="certifications" class="flex items-center text-sm font-medium text-gray-700">
+                                        <span class="w-2 h-2 bg-red-500 rounded-full mr-2"></span>
+                                        📜 Certifications
+                                    </label>
+                                    <select name="certifications" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 bg-white">
+                                        <option value="information security" {% if certifications == "information security" %}selected{% endif %}>Information Security</option>
+                                        <option value="shell programming" {% if certifications == "shell programming" %}selected{% endif %}>Shell Programming</option>
+                                        <option value="r programming" {% if certifications == "r programming" %}selected{% endif %}>R Programming</option>
+                                        <option value="distro making" {% if certifications == "distro making" %}selected{% endif %}>Distro Making</option>
+                                        <option value="machine learning" {% if certifications == "machine learning" %}selected{% endif %}>Machine Learning</option>
+                                        <option value="full stack" {% if certifications == "full stack" %}selected{% endif %}>Full Stack</option>
+                                        <option value="app development" {% if certifications == "app development" %}selected{% endif %}>App Development</option>
+                                        <option value="python" {% if certifications == "python" %}selected{% endif %}>Python</option>
+                                        <option value="hadoop" {% if certifications == "hadoop" %}selected{% endif %}>Hadoop</option>
+                                    </select>
+                                </div>
+
+                                <!-- Workshops -->
+                                <div class="space-y-2">
+                                    <label for="workshops" class="flex items-center text-sm font-medium text-gray-700">
+                                        <span class="w-2 h-2 bg-red-500 rounded-full mr-2"></span>
+                                        🛠️ Workshops Attended
+                                    </label>
+                                    <select name="workshops" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 bg-white">
+                                        <option value="testing" {% if workshops == "testing" %}selected{% endif %}>Testing</option>
+                                        <option value="database security" {% if workshops == "database security" %}selected{% endif %}>Database Security</option>
+                                        <option value="game development" {% if workshops == "game development" %}selected{% endif %}>Game Development</option>
+                                        <option value="data science" {% if workshops == "data science" %}selected{% endif %}>Data Science</option>
+                                        <option value="system designing" {% if workshops == "system designing" %}selected{% endif %}>System Designing</option>
+                                        <option value="hacking" {% if workshops == "hacking" %}selected{% endif %}>Hacking</option>
+                                        <option value="cloud computing" {% if workshops == "cloud computing" %}selected{% endif %}>Cloud Computing</option>
+                                        <option value="web technologies" {% if workshops == "web technologies" %}selected{% endif %}>Web Technologies</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Interests & Career Preferences Section -->
+                        <div class="space-y-6">
+                            <h3 class="text-xl font-semibold text-gray-800 border-b border-gray-200 pb-2 mb-4">
+                                🎯 Interests & Career Preferences
+                            </h3>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <!-- Interested Subjects -->
+                                <div class="space-y-2">
+                                    <label for="interested-subjects" class="flex items-center text-sm font-medium text-gray-700">
+                                        <span class="w-2 h-2 bg-red-500 rounded-full mr-2"></span>
+                                        📚 Interested Subjects
+                                    </label>
+                                    <select name="interested_subjects" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 bg-white">
+                                        <option value="programming" {% if interested_subjects == "programming" %}selected{% endif %}>Programming</option>
+                                        <option value="management" {% if interested_subjects == "management" %}selected{% endif %}>Management</option>
+                                        <option value="networks" {% if interested_subjects == "networks" %}selected{% endif %}>Networks</option>
+                                        <option value="software engineering" {% if interested_subjects == "software engineering" %}selected{% endif %}>Software Engineering</option>
+                                        <option value="cloud computing" {% if interested_subjects == "cloud computing" %}selected{% endif %}>Cloud Computing</option>
+                                        <option value="parallel" {% if interested_subjects == "parallel" %}selected{% endif %}>Parallel Computing</option>
+                                        <option value="IOT" {% if interested_subjects == "IOT" %}selected{% endif %}>IoT</option>
+                                        <option value="Computer architecture" {% if interested_subjects == "Computer architecture" %}selected{% endif %}>Computer Architecture</option>
+                                        <option value="hacking" {% if interested_subjects == "hacking" %}selected{% endif %}>Hacking</option>
+                                        <option value="data engineering" {% if interested_subjects == "data engineering" %}selected{% endif %}>Data Engineering</option>
+                                    </select>
+                                </div>
+
+                                <!-- Interested Career Area -->
+                                <div class="space-y-2">
+                                    <label for="interested-career-area" class="flex items-center text-sm font-medium text-gray-700">
+                                        <span class="w-2 h-2 bg-red-500 rounded-full mr-2"></span>
+                                        🚀 Interested Career Area
+                                    </label>
+                                    <select name="interested_career_area" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 bg-white">
+                                        <option value="testing" {% if interested_career_area == "testing" %}selected{% endif %}>Testing</option>
+                                        <option value="system developer" {% if interested_career_area == "system developer" %}selected{% endif %}>System Developer</option>
+                                        <option value="Business process analyst" {% if interested_career_area == "Business process analyst" %}selected{% endif %}>Business Process Analyst</option>
+                                        <option value="security" {% if interested_career_area == "security" %}selected{% endif %}>Security</option>
+                                        <option value="developer" {% if interested_career_area == "developer" %}selected{% endif %}>Developer</option>
+                                        <option value="cloud computing" {% if interested_career_area == "cloud computing" %}selected{% endif %}>Cloud Computing</option>
+                                    </select>
+                                </div>
+
+                                <!-- Type of Company -->
+                                <div class="space-y-2">
+                                    <label for="Type-of-company-want-to-settle-in?" class="flex items-center text-sm font-medium text-gray-700">
+                                        <span class="w-2 h-2 bg-red-500 rounded-full mr-2"></span>
+                                        🏢 Type of Company Preference
+                                    </label>
+                                    <select name="Type_of_company_want_to_settle_in" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 bg-white">
+                                        <option value="BPA" {% if Type_of_company_want_to_settle_in == "BPA" %}selected{% endif %}>BPA</option>
+                                        <option value="Cloud Services" {% if Type_of_company_want_to_settle_in == "Cloud Services" %}selected{% endif %}>Cloud Services</option>
+                                        <option value="product development," {% if Type_of_company_want_to_settle_in == "product development," %}selected{% endif %}>Product Development</option>
+                                        <option value="Testing and Maintainance Services" {% if Type_of_company_want_to_settle_in == "Testing and Maintainance Services" %}selected{% endif %}>Testing and Maintenance Services</option>
+                                        <option value="SAaS services" {% if Type_of_company_want_to_settle_in == "SAaS services" %}selected{% endif %}>SAaS Services</option>
+                                        <option value="Web Services" {% if Type_of_company_want_to_settle_in == "Web Services" %}selected{% endif %}>Web Services</option>
+                                        <option value="Finance" {% if Type_of_company_want_to_settle_in == "Finance" %}selected{% endif %}>Finance</option>
+                                        <option value="Sales and Marketing" {% if Type_of_company_want_to_settle_in == "Sales and Marketing" %}selected{% endif %}>Sales and Marketing</option>
+                                        <option value="Product based" {% if Type_of_company_want_to_settle_in == "Product based" %}selected{% endif %}>Product Based</option>
+                                        <option value="Service Based" {% if Type_of_company_want_to_settle_in == "Service Based" %}selected{% endif %}>Service Based</option>
+                                    </select>
+                                </div>
+
+                                <!-- Management or Technical -->
+                                <div class="space-y-2">
+                                    <label for="management_technical" class="flex items-center text-sm font-medium text-gray-700">
+                                        <span class="w-2 h-2 bg-red-500 rounded-full mr-2"></span>
+                                        ⚖️ Management or Technical
+                                    </label>
+                                    <select name="management_technical" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 bg-white">
+                                        <option value="Management" {% if management_technical == "Management" %}selected{% endif %}>Management</option>
+                                        <option value="Technical" {% if management_technical == "Technical" %}selected{% endif %}>Technical</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Personal Traits Section -->
+                        <div class="space-y-6">
+                            <h3 class="text-xl font-semibold text-gray-800 border-b border-gray-200 pb-2 mb-4">
+                                🧠 Personal Traits
+                            </h3>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <!-- Worked in Teams -->
+                                <div class="space-y-2">
+                                    <label for="team" class="flex items-center text-sm font-medium text-gray-700">
+                                        <span class="w-2 h-2 bg-red-500 rounded-full mr-2"></span>
+                                        👥 Worked in Teams Ever?
+                                    </label>
+                                    <select name="team" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 bg-white">
+                                        <option value="yes" {% if team == "yes" %}selected{% endif %}>Yes</option>
+                                        <option value="no" {% if team == "no" %}selected{% endif %}>No</option>
+                                    </select>
+                                </div>
+
+                                <!-- Introvert -->
+                                <div class="space-y-2">
+                                    <label for="introvert" class="flex items-center text-sm font-medium text-gray-700">
+                                        <span class="w-2 h-2 bg-red-500 rounded-full mr-2"></span>
+                                        🤫 Are You an Introvert?
+                                    </label>
+                                    <select name="introvert" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 bg-white">
+                                        <option value="yes" {% if introvert == "yes" %}selected{% endif %}>Yes</option>
+                                        <option value="no" {% if introvert == "no" %}selected{% endif %}>No</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="pt-6">
+                            <div class="text-center">
+                                <button type="submit" 
+                                        class="inline-flex items-center px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold text-lg rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg">
+                                    <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                                    </svg>
+                                    Predict My Ideal Career
+                                </button>
+                                <p class="text-sm text-gray-500 mt-3">
+                                    * Required fields - All fields marked with a red dot are mandatory
+                                </p>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
